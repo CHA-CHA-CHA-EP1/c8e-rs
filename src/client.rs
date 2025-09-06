@@ -1,13 +1,12 @@
+use base64::{engine::general_purpose, Engine as _};
 use reqwest;
-use std::time::Duration;
+use std::{str::FromStr, time::Duration};
 
 /// Main Confluence API client (C8e = ConfluencE)
 #[derive(Debug, Clone)]
 pub struct C8e {
     base_url: String,
     http_client: reqwest::Client,
-    email: String,
-    token: String,
 }
 
 /// Builder for creating C8e client
@@ -29,12 +28,7 @@ impl C8e {
     pub async fn ping(&self) -> Result<bool, reqwest::Error> {
         // Using v2 API path: /wiki/api/v2/pages (requires auth)
         let url = format!("{}/wiki/api/v2/pages?limit=1", self.base_url);
-        let response = self
-            .http_client
-            .get(&url)
-            .basic_auth(&self.email, Some(&self.token))
-            .send()
-            .await?;
+        let response = self.http_client.get(&url).send().await?;
         Ok(response.status().is_success())
     }
 }
@@ -75,7 +69,17 @@ impl ConfluenceBuilder {
             client_builder = client_builder.timeout(timeout);
         }
 
-        let http_client = client_builder.build()?;
+        let http_client = client_builder
+            .default_headers({
+                let mut headers = reqwest::header::HeaderMap::new();
+                let auth_value = reqwest::header::HeaderValue::from_str(&format!(
+                    "Basic {}",
+                    general_purpose::STANDARD.encode(format!("{}:{}", email, token))
+                ))?;
+                headers.insert(reqwest::header::AUTHORIZATION, auth_value);
+                headers
+            })
+            .build()?;
 
         // Construct base URL from domain
         let base_url = if domain.starts_with("http://") || domain.starts_with("https://") {
@@ -87,8 +91,6 @@ impl ConfluenceBuilder {
         Ok(C8e {
             base_url,
             http_client,
-            email,
-            token,
         })
     }
 }
