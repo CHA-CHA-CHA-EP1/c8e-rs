@@ -4,12 +4,11 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get credentials from environment variables or use defaults
-    let domain = std::env::var("CONFLUENCE_DOMAIN")
-        .unwrap_or_else(|_| "example.atlassian.net".to_string());
-    let email = std::env::var("CONFLUENCE_EMAIL")
-        .unwrap_or_else(|_| "your-email@example.com".to_string());
-    let token = std::env::var("CONFLUENCE_TOKEN")
-        .unwrap_or_else(|_| "your-api-token".to_string());
+    let domain =
+        std::env::var("CONFLUENCE_DOMAIN").unwrap_or_else(|_| "example.atlassian.net".to_string());
+    let email =
+        std::env::var("CONFLUENCE_EMAIL").unwrap_or_else(|_| "your-email@example.com".to_string());
+    let token = std::env::var("CONFLUENCE_TOKEN").unwrap_or_else(|_| "your-api-token".to_string());
 
     println!("🔗 Connecting to Confluence: {}", domain);
     println!("📧 Using email: {}", email);
@@ -37,3 +36,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+

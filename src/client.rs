@@ -29,7 +29,8 @@ impl C8e {
     pub async fn ping(&self) -> Result<bool, reqwest::Error> {
         // Using v2 API path: /wiki/api/v2/pages (requires auth)
         let url = format!("{}/wiki/api/v2/pages?limit=1", self.base_url);
-        let response = self.http_client
+        let response = self
+            .http_client
             .get(&url)
             .basic_auth(&self.email, Some(&self.token))
             .send()
@@ -68,8 +69,7 @@ impl ConfluenceBuilder {
         let token = self.token.ok_or("API token is required")?;
 
         // Create HTTP client with basic auth
-        let mut client_builder = reqwest::Client::builder()
-            .user_agent("c8e-rs/0.1.0");
+        let mut client_builder = reqwest::Client::builder().user_agent("c8e-rs/0.1.0");
 
         if let Some(timeout) = self.timeout {
             client_builder = client_builder.timeout(timeout);
