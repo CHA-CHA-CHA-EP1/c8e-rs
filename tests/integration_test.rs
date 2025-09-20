@@ -25,7 +25,10 @@ mod integration_tests {
 
             let result = client.ping().await;
             assert!(result.is_ok(), "Ping should succeed with valid credentials");
-            assert!(result.unwrap(), "Ping should return true for successful connection");
+            assert!(
+                result.unwrap(),
+                "Ping should return true for successful connection"
+            );
         } else {
             println!("Skipping real API test - set CONFLUENCE_DOMAIN, CONFLUENCE_EMAIL, CONFLUENCE_TOKEN environment variables");
         }
@@ -41,23 +44,30 @@ mod integration_tests {
             .expect("Failed to build client");
 
         let result = client.ping().await;
-        assert!(result.is_ok(), "Request should complete even for invalid domain");
-        assert!(!result.unwrap(), "Ping should return false for invalid domain");
+        assert!(
+            result.is_ok(),
+            "Request should complete even for invalid domain"
+        );
+        assert!(
+            !result.unwrap(),
+            "Ping should return false for invalid domain"
+        );
     }
 
     #[test]
     fn test_builder_missing_domain() {
-        let result = C8e::new("")
-            .auth("test@example.com", "token")
-            .build();
-        
+        let result = C8e::new("").auth("test@example.com", "token").build();
+
         assert!(result.is_err(), "Should fail when domain is empty");
     }
 
     #[test]
     fn test_builder_missing_auth() {
         let result = C8e::new("example.atlassian.net").build();
-        assert!(result.is_err(), "Should fail when authentication is missing");
+        assert!(
+            result.is_err(),
+            "Should fail when authentication is missing"
+        );
     }
 
     #[test]
@@ -67,7 +77,7 @@ mod integration_tests {
             .auth("test@example.com", "token")
             .build()
             .unwrap();
-        
+
         // Test domain with https protocol
         let client2 = C8e::new("https://example.atlassian.net")
             .auth("test@example.com", "token")
@@ -80,3 +90,4 @@ mod integration_tests {
         assert!(format!("{:?}", client2).contains("example.atlassian.net"));
     }
 }
+
