@@ -1,6 +1,8 @@
+use super::api;
+
 use base64::{engine::general_purpose, Engine as _};
 use reqwest;
-use std::{str::FromStr, time::Duration};
+use std::time::Duration;
 
 /// Main Confluence API client (C8e = ConfluencE)
 #[derive(Debug, Clone)]
@@ -30,6 +32,10 @@ impl C8e {
         let url = format!("{}/wiki/api/v2/pages?limit=1", self.base_url);
         let response = self.http_client.get(&url).send().await?;
         Ok(response.status().is_success())
+    }
+
+    pub fn pages(&self) -> api::pages::PagesApi {
+        api::pages::PagesApi::new(self.base_url.clone(), self.http_client.clone())
     }
 }
 

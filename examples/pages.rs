@@ -1,5 +1,6 @@
-use c8e_rs::C8e;
 use std::time::Duration;
+
+use c8e_rs::C8e;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -19,19 +20,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .timeout(Duration::from_secs(30))
         .build()?;
 
-    println!("🏓 Testing connection...");
-
-    // Test the connection
-    match client.ping().await {
-        Ok(true) => {
-            println!("✅ Connection successful! Confluence API is reachable.");
+    // pages
+    let page = client.pages();
+    let content = page
+        .get_by_id("164192", Some("body-format=atlas_doc_format"))
+        .await;
+    match content {
+        Ok(page) => {
+            println!("{:?}", page);
         }
-        Ok(false) => {
-            println!("❌ Connection failed! Check your domain and credentials.");
-        }
-        Err(e) => {
-            println!("💥 Error occurred: {}", e);
-        }
+        Err(e) => println!("{:?}", e),
     }
 
     Ok(())
