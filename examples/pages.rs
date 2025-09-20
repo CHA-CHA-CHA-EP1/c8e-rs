@@ -22,7 +22,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // pages
     let page = client.pages();
-    let content = page.get_by_id("164192").await;
+    let content = page
+        .get_by_id("164192", Some("body-format=atlas_doc_format"))
+        .await;
     match content {
         Ok(page) => {
             println!("{:?}", page);
